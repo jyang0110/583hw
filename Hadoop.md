@@ -18,3 +18,22 @@
 ```
 
 I changed my name here. 
+
+# diffmap
+```java
+		if (sections.length == 2){ //check tbe length
+			context.write(new Text(sections[0].trim()),new Text(sections[1].trim()));
+		}
+```
+I check the length of the input and split node-rank pair then emit them
+
+# diffRed
+```java
+		int i = 0;
+		for (Text val: values){
+			String tmp = val.toString();
+			ranks[i++] = Double.valueOf(tmp);
+			if (i >= 2) break;
+		}
+		context.write(new Text(String.valueOf(Math.abs(ranks[0] - ranks[1]))), new Text());
+```
