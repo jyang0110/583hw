@@ -71,3 +71,54 @@ loop through the inputs and emit value-rank pair
 ```
 output adjacency list 
 
+# IterMapper
+```java
+		String[] nr = sections[0].split("\\+"); // split node+rank
+		String node = String.valueOf(nr[0]);
+		double rank = Double.valueOf(nr[1]);
+		String[] adjList = sections[1].split(" ");
+
+		double weight = rank / adjList.length;
+		
+		for (int i = 0; i < adjList.length; i++){
+			context.write(new Text(adjList[i]), new Text(String.valueOf(weight)));
+		}
+		context.write(new Text(node), new Text("ADJ:" + sections[1]));
+```
+split value rank pair and output it
+
+# IterReducer
+
+```java
+		Iterator<Text> iterator = values.iterator();
+		double currentRank = 0; 
+		String ajlist = "";
+		while(iterator.hasNext()) {
+			String line = iterator.next().toString();
+			if(!line.startsWith("ADJ")) {
+				currentRank += Double.valueOf(line);
+			} else {
+				ajlist = line.replaceAll("ADJ", "");
+			}
+		}
+		currentRank = 1 - d + currentRank * d;
+		context.write(new Text(key + "+" + currentRank), new Text(ajlist));
+```
+split out rank value and output
+
+## testing
+create local file graph.txt 
+```bash
+1 : 2 3
+2 : 4
+3 : 1 4 5
+5 : 1 4
+```
+name.txt
+```bash
+1: v1
+2: v2
+3: v3
+4: v4
+5: v5
+```
